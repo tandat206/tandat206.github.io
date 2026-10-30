@@ -121,13 +121,13 @@ button{cursor:pointer;background:none;border:0}
       <!-- TRANG TẠO ĐƠN BUFF -->
       <section id="page-buff" class="page active">
         <div class="page-head">
-          <div><h1 class="page-title">Hệ Thống Buff Like</h1><p class="page-sub">Tăng tương tác theo đúng thời gian thật</p></div>
+          <div><h1 class="page-title">Hệ Thống Buff Like</h1><p class="page-sub">Tăng tương tác CIN_LIKE</p></div>
         </div>
         
         <div class="glow" style="padding: 24px; max-width: 600px; margin: 0 auto; border-radius: 18px;">
           <div class="field">
             <label for="buffId">Nhập ID Cần Buff</label>
-            <input type="text" id="buffId" placeholder="Nhập ID bài viết hoặc tài khoản..." autocomplete="off">
+            <input type="text" id="buffId" placeholder="Nhập ID GAME" autocomplete="off">
           </div>
           <div class="field">
             <label for="buffKey">Key Kích Hoạt</label>
@@ -144,7 +144,7 @@ button{cursor:pointer;background:none;border:0}
           </div>
           
           <button class="btn primary" id="btnStartBuff" style="width: 100%; margin-top: 15px; height: 48px;">
-            <i class="fa-solid fa-play"></i> Bắt Đầu Buff Real-time
+            <i class="fa-solid fa-play"></i> Bắt Đầu Buff LIKE
           </button>
 
           <div id="buffProgressArea" style="display: none; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line);">
@@ -262,14 +262,25 @@ $("btnStartBuff").addEventListener("click", () => {
 
   if (!id) return toast("Vui lòng nhập ID cần buff!", "error");
   if (!key) return toast("Vui lòng nhập Key!", "error");
-  if (key !== "KEY_CIN1104") {
-    addLog(`Cảnh báo: Từ chối yêu cầu, Key sai hoặc đã hết hạn (Key nhập: ${key})`, "error");
-    return toast("Key không hợp lệ hoặc đã hết hạn!", "error");
+  
+  // Logic kiểm tra quyền truy cập theo gói Like và Key
+  if (amount === 20) {
+      if (key !== "KEY_CIN1104") {
+          addLog(`Cảnh báo: Từ chối yêu cầu, Key sai hoặc đã hết hạn cho gói 20 Like (Key nhập: ${key})`, "error");
+          return toast("Key không hợp lệ cho gói 20 Like!", "error");
+      }
+  } else if (amount === 100 || amount === 150 || amount === 200) {
+       if (key !== "KEY_CINLIKE") {
+           addLog(`Cảnh báo: Hệ thống key chưa có quyền truy cập. Vui lòng MUA KEY CỦA ADMIN HOẶC VƯỢT LINK LẤY KEY cho gói ${amount} Like.`, "error");
+           return toast("Hệ thống key chưa có quyền truy cập!", "error");
+       }
+  } else {
+      return toast("Gói Like không hợp lệ!", "error");
   }
 
   $("btnStartBuff").disabled = true;
   $("buffProgressArea").style.display = "block";
-  $("buffStatusText").textContent = "Đang kết nối hệ thống bơm tương tác...";
+  $("buffStatusText").textContent = "Đang kết nối hệ thống bơm LIKE...";
   $("buffStatusText").style.color = "var(--cyan)";
   $("buffProgressBar").style.width = "0%";
   $("buffCounter").textContent = `0 / ${amount}`;
@@ -282,8 +293,8 @@ $("btnStartBuff").addEventListener("click", () => {
   
   // Delay giả lập kết nối
   setTimeout(() => {
-    $("buffStatusText").textContent = "Đang bơm tương tác thời gian thực...";
-    addLog(`Đang bơm Like thời gian thực cho ID: ${id}...`, "warning");
+    $("buffStatusText").textContent = "Đang bơm LIKE, các bé vui lòng đợi 😘...";
+    addLog(`Đang bơm Like cho ID: ${id}...`, "warning");
     
     const buffInterval = setInterval(() => {
       const increment = Math.floor(Math.random() * 8) + 1;
